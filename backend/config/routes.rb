@@ -19,7 +19,9 @@ Rails.application.routes.draw do
     namespace :api do
       namespace :v1 do
 
-        resources :articles, concerns: [:recommendable, :commentable]
+        resources :articles, concerns: [:recommendable, :commentable] do
+          get 'search', on: :collection
+        end
         resources :images
         resources :users, only: [:index, :show, :update]
         resources :links, except: [:show]

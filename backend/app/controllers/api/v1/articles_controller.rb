@@ -1,10 +1,10 @@
 class Api::V1::ArticlesController < ApplicationController
   respond_to :json
 
-  after_action :verify_authorized, except: [:index]
-  before_action :authenticate_user!, except: [:index, :show]
+  after_action :verify_authorized, except: [:index, :search]
+  before_action :authenticate_user!, except: [:index, :show, :search]
   before_action :set_article, only: [:show, :update, :destroy]
-  before_action :load_query, only: [:index]
+  before_action :load_query, only: [:index, :search]
 
   # GET /api/v1/articles
   # GET /api/v1/articles.json
@@ -16,6 +16,17 @@ class Api::V1::ArticlesController < ApplicationController
     # Use the custom Article.published method to return all articles that is
     # marked published.
     @articles = @query.publishings.try(order_param).page(params[:page])
+    render 'api/v1/articles/index'
+  end
+
+  def search
+    # Use the custom Article.published method to return all articles that is
+    # marked published.
+    @articles = @query.publishings.search "#{params[:search]}",
+      page: params[:page],
+      fields: ['title^10', 'tagline', 'body'],
+      boost_by: [:hotness],
+      operator: "or"
     render 'api/v1/articles/index'
   end
 

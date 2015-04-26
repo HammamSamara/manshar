@@ -1,5 +1,6 @@
 class Article < ActiveRecord::Base
   include Concerns::Utils
+  searchkick callbacks: :async
   paginates_per 15
 
   belongs_to :user
